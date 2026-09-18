@@ -1,27 +1,40 @@
-from typing import Callable
+from typing import Callable, Any
 
 
-""""
-mage_counter() - Create a counting closure:
-• Return a function that counts how many times it’s been called
-• Each call should return the current count (starting from 1)
-• The counter should persist between calls
-• Creating two separate counters must yield independent state.
-• Use closure to maintain state without global variables
-"""
-def mage_counter() -> Callable:
-    return lambda x: x + 1
+def mage_counter() -> Callable[[], int]:
+    count = 0
+    def increment_mage_counter():
+        nonlocal count
+        count += 1
+        return count
+    return lambda: increment_mage_counter()
 
 
-"""
-spell_accumulator(initial_power) - Create power accumulator:
-• Return a function that accumulates power over time
-• Each call adds the given amount to the total power
-• Return the new total power after each addition
-• Start with initial_power as the base
-"""
-def spell_accumulator(initial_power: int) -> Callable:
-    pass
+def test_mage_counter() -> None:
+    print("Testing mage counter...")
+    counter_a = mage_counter()
+    counter_b = mage_counter()
+    print(f"counter_a call 1: {counter_a()}")
+    print(f"counter_a call 2: {counter_a()}")
+    print(f"counter_b call 1: {counter_b()}")
+    print()
+
+
+def spell_accumulator(initial_power: int) -> Callable[[int], int]:
+    acumulated_power: int = initial_power
+    def acumulate_power(power: int):
+        nonlocal acumulated_power
+        acumulated_power += power
+        return acumulated_power
+    return lambda power_amount: acumulate_power(power_amount)
+
+
+def test_spell_accumulator() -> None:
+    print("Testing spell accumulator...")
+    spell_accumulator_a = spell_accumulator(100)
+    print(f"Base 100, add 20: {spell_accumulator_a(20)}")
+    print(f"Base 100, add 30: {spell_accumulator_a(30)}")
+    print()
 
 
 """
@@ -30,31 +43,12 @@ enchantment_factory(enchantment_type) - Create enchantment functions:
 • The returned function takes an item name and returns enchanted description
 • Format: "enchantment_type item_name" (e.g., "Flaming Sword")
 • Each factory creates functions with different enchantment types
+
+Flaming Sword
+Frozen Shield
 """
 def enchantment_factory(enchantment_type: str) -> Callable:
     pass
-
-
-"""memory_vault() - Create a memory management system:
-• Return a dict with ’store’ and ’recall’ functions
-• ’store’ function: takes (key, value) and stores the memory
-• ’recall’ function: takes (key) and returns stored value or "Memory not found"
-• Use closure to maintain private memory storage
-"""
-def memory_vault() -> dict[str, Callable]:
-    pass
-
-
-def test_mage_counter() -> None:
-    print("Testing mage counter...")
-    mage_counter()
-    print()
-
-
-def test_spell_accumulator() -> None:
-    print("Testing spell accumulator...")
-    spell_accumulator()
-    print()
 
 
 def test_enchantment_factory() -> None:
@@ -63,9 +57,29 @@ def test_enchantment_factory() -> None:
     print()
 
 
+def memory_vault() -> dict[str, Callable[..., str | Any]]:
+    stored_values: dict[str, Any] = {}
+    
+    def store(key: str, value: Any) -> None:
+        stored_values[key] = value
+
+    def recall(key: str) -> str | Any:
+        if not stored_values.get(key):
+            return "Memory not found"
+        return stored_values[key]
+    return {
+        "store": lambda key, value: store(key, value),
+        "recall": lambda key: recall(key)
+    }
+
+
 def test_memory_vault() -> None:
     print("Testing memory vault...")
-    memory_vault()
+    mem_vault = memory_vault()
+    print("Store 'secret'= 42")
+    mem_vault["store"]("secret", 42)
+    print(f"Recall 'secret': {mem_vault["recall"]("secret")}")
+    print(f"Recall 'unknown': {mem_vault["recall"]("unknown")}")
     print()
 
 

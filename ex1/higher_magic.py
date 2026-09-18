@@ -21,9 +21,9 @@ def test_spell_combiner() -> None:
     combined = spell_combiner(
         spell_combiner_fireball, spell_combiner_heal
     )
-    print(f"Combined spell result: {combined("Dragon")}")
+    fireball, heal = combined("Dragon")
+    print(f"Combined spell result: {fireball}, {heal}")
     print()
-
 
 
 def power_amplifier_base_spell(power: int) -> int:
@@ -40,7 +40,8 @@ def power_amplifier(
 def test_power_amplifier() -> None:
     print("Testing power amplifier...")
     mega_fireball = power_amplifier(power_amplifier_base_spell, 3)
-    print(f"Original: {power_amplifier_base_spell(10)}, Amplified: {mega_fireball(10)}")
+    original = f"Original: {power_amplifier_base_spell(10)}"
+    print(f"{original}, Amplified: {mega_fireball(10)}")
     print()
 
 
@@ -61,31 +62,28 @@ def conditional_caster(
 
 def test_conditional_caster() -> None:
     print("Testing conditional caster ...")
-    conditional_caster = conditional_caster(
+    cond_cast = conditional_caster(
         conditional_caster_condition, conditional_caster_spell
     )
-    print(conditional_caster(10))
-    print(conditional_caster(11))
+    print(cond_cast(10))
+    print(cond_cast(11))
     print()
 
 
-"""def spell_sequence_spell1():pass
-def spell_sequence_spell2():pass"""
-spell_sequence_list: list[Callable] = [
-    spell_combiner_fireball, spell_combiner_heal
-]
-"""
-spell_sequence(spells) - Create spell sequence:
-• Return a function that casts all spells in order
-• Each spell receives the same arguments
-• Returns a list of all spell results
-"""
-def spell_sequence(spells: list[Callable]) -> Callable:pass
+def spell_sequence(
+    spells: list[Callable[[str], str]]
+) -> Callable[[str], list[str]]:
+    return lambda target: [spell(target) for spell in spells]
 
 
 def test_spell_sequence() -> None:
     print("Testing spell sequence ...")
-    spell_sequence = spell_sequence(spell_sequence_list)
+    spell_seq = spell_sequence(
+        [spell_combiner_fireball, spell_combiner_heal]
+    )
+    # Formato de salida incorrecto. Preguntar si se puede hacer/usar -> str.join()
+    for spell in spell_seq("Dragon"):
+        print(spell)
     print()
 
 
