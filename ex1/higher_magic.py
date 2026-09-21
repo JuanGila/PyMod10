@@ -57,7 +57,7 @@ def conditional_caster(
     condition: Callable[[int], bool],
     spell: Callable[[int], str]
 ) -> Callable[[int], str]:
-    return lambda power: "Spell fizzled" if not condition(power) else spell(power)
+    return lambda power: spell(power) if condition(power) else "Spell fizzled"
 
 
 def test_conditional_caster() -> None:
@@ -81,9 +81,7 @@ def test_spell_sequence() -> None:
     spell_seq = spell_sequence(
         [spell_combiner_fireball, spell_combiner_heal]
     )
-    # Formato de salida incorrecto. Preguntar si se puede hacer/usar -> str.join()
-    for spell in spell_seq("Dragon"):
-        print(spell)
+    print(", ".join(spell_seq("Dragon")))
     print()
 
 

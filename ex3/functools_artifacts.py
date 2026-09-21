@@ -1,22 +1,23 @@
 from typing import Callable, Any
 from operator import add as oper_add, mul as oper_mul
-from operator import max as oper_max, min as oper_min
-from functools import reduce as funct_reduce
-from functools import partial as funct_partial
-from functools import lru_cache as funct_lru_cache
-from functools import singledispatch as funct_singledispatch
+from functools import (
+    reduce as funct_reduce,
+    partial as funct_partial,
+    lru_cache as funct_lru_cache,
+    singledispatch as funct_singledispatch
+)
 
 
-spell_powers = [40, 20, 33, 37, 32, 24]
-allowed_operations = ['add', 'multiply', 'max', 'min']
-fibonacci_tests = [13, 12, 15]
+generated_fibonacci_tests = [13, 12, 15]
+generated_spell_powers = [40, 20, 33, 37, 32, 24]
+generated_allowed_spell_operations = ['add', 'multiply', 'max', 'min']
+
 
 def spell_reducer(spells: list[int], operation: str) -> int:
     if not spells:
         return 0
-    if operation not in allowed_operations:
-        print(f"Unknown operation: {operation}")
-        return 0
+    if operation not in generated_allowed_spell_operations:
+        raise ValueError(f"Unknown operation: {operation}")
     if operation == 'add':
         return funct_reduce(lambda x, y: oper_add(x, y), spells)
     if operation == 'multiply':
@@ -29,28 +30,50 @@ def spell_reducer(spells: list[int], operation: str) -> int:
 
 def test_spell_reducer() -> None:
     print("Testing spell reducer...")
-    print(f"Sum: {spell_reducer(spell_powers, "add")}")
-    print(f"Product: {spell_reducer(spell_powers, "multiply")}")
-    print(f"Max: {spell_reducer(spell_powers, "max")}")
+    print(f"Sum: {spell_reducer(generated_spell_powers, "add")}")
+    print(f"Product: {spell_reducer(generated_spell_powers, "multiply")}")
+    print(f"Max: {spell_reducer(generated_spell_powers, "max")}")
     print()
 
 def base_enchantment_funct(
     power: int, element: str, target:str
-) -> str:pass
+) -> str:
+    return f"Power: {power}, Element: {element}, Target: {target}"
 """
 partial_enchanter(base_enchantment) - Create partial applications:
-• Take a base enchantment function with signature (power: int, element: str, target:
-str) -> str
+• Take a base enchantment function with signature (power: int, element: str, target: str) -> str
 • Use functools.partial to create 3 specialized versions
 • Each version pre-filling power=50 and the element
 """
-def partial_enchanter(base_enchantment: Callable) -> dict[str, Callable]:
-    pass
-
+def partial_enchanter(
+    base_enchantment: Callable[[int , str, str], str]
+) -> dict[str, Callable]:
+    return {
+        "fire": lambda enchantment_target: funct_partial(
+            base_enchantment,
+            power=50, element="fireball",
+            target=enchantment_target
+        ),
+        "ice": lambda enchantment_target: funct_partial(
+            base_enchantment,
+            power=50, element="ice",
+            target=enchantment_target
+        ),
+        "shadow": lambda enchantment_target: funct_partial(
+            base_enchantment,
+            power=50, element="shadow",
+            target=enchantment_target
+        )
+    }
 
 def test_partial_enchanter() -> None:
     print("Testing partial enchanter ...")
-    partial_enchanter()
+    enchantment = partial_enchanter(
+        base_enchantment_funct("¿base_enchantment_funct?")
+    )
+    print(enchantment["fire"])
+    print(enchantment["ice"])
+    print(enchantment["shadow"])
     print()
 
 
@@ -66,6 +89,16 @@ INFO: You can verify caching works via memoized_fibonacci.cache_info().
 def memoized_fibonacci(n: int) -> int:
     pass
 
+
+def test_memoized_fibonacci() -> None:
+    print("Testing memoized fibonacci ...")
+    print(f"Fib(0): {memoized_fibonacci(0)}")
+    print(f"Fib(1): {memoized_fibonacci(1)}")
+    print(f"Fib(10): {memoized_fibonacci(10)}")
+    print(f"Fib(15): {memoized_fibonacci(15)}")
+    print()
+
+
 """
 spell_dispatcher() - Create single dispatch system:
 • Use decorator functools.singledispatch to create a spell system
@@ -78,14 +111,14 @@ def spell_dispatcher() -> Callable[[Any], str]:
     pass
 
 
-def test_memoized_fibonacci() -> None:
-    print("Testing memoized fibonacci ...")
-    memoized_fibonacci()
-    print()
-
-
 def test_spell_dispatcher() -> None:
     print("Testing spell dispatcher ...")
+    """
+    Damage spell: 42 damage
+    Enchantment: fireball
+    Multi-cast: 3 spells
+    Unknown spell type
+    """
     spell_dispatcher()
     print()
 

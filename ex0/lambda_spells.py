@@ -7,7 +7,6 @@ artifacts_generated: list[dict[str, object]] = [
     {'name': 'Light Prism', 'power': 60, 'type': 'armor'},
     {'name': 'Crystal Orb', 'power': 90, 'type': 'weapon'}
 ]
-
 mages_generated: list[dict[str, object]] = [
     {'name': 'Jordan', 'power': 89, 'element': 'earth'},
     {'name': 'Morgan', 'power': 93, 'element': 'earth'},
@@ -15,42 +14,17 @@ mages_generated: list[dict[str, object]] = [
     {'name': 'Casey', 'power': 51, 'element': 'wind'},
     {'name': 'Alex', 'power': 50, 'element': 'shadow'}
 ]
-
 spells_generated: list[str] = ['tornado', 'lightning', 'fireball', 'heal']
 
 
-def artifact_sorter(artifacts: list[dict]) -> list[dict]:
+def artifact_sorter(
+    artifacts: list[dict[str, object]]
+) -> list[dict[str, object]]:
     return sorted(
         artifacts,
         key=lambda artifact: cast(int, artifact["power"]),
         reverse=True
     )
-
-
-def power_filter(mages: list[dict], min_power: int) -> list[dict]:
-    return list(filter(lambda mage: mage["power"] >= min_power, mages))
-
-
-def spell_transformer(spells: list[str]) -> list[str]:
-    return list(map(lambda spell: f"* {spell} *", spells))
-
-
-def mage_stats(mages: list[dict]) -> dict:
-    return {
-        "max_power": max(
-            mages,
-            key=lambda mage: cast(int, mage["power"])
-        )["power"],
-        "min_power": min(
-            mages,
-            key=lambda mage: cast(int, mage["power"])
-        )["power"],
-        "avg_power": round(
-            sum(map(lambda mage: cast(int, mage["power"]), mages))
-            / len(mages),
-            2
-        )
-    }
 
 
 def test_artifact_sorter() -> None:
@@ -59,11 +33,17 @@ def test_artifact_sorter() -> None:
     artifacts_len = len(sorted_artifacts)
     for artifact in sorted_artifacts:
         msg: str = f"{artifact['name']} ({artifact['power']} power)"
-        if artifact['name'] == sorted_artifacts[artifacts_len - 1]['name']:
-            print(msg)
-        else:
+        if artifact['name'] != sorted_artifacts[artifacts_len - 1]['name']:
             print(msg, end=" comes before ")
+        else:
+            print(msg)
     print()
+
+
+def power_filter(
+    mages: list[dict], min_power: int
+) -> list[dict]:
+    return list(filter(lambda mage: mage["power"] >= min_power, mages))
 
 
 def test_power_filter() -> None:
@@ -80,11 +60,34 @@ def test_power_filter() -> None:
     print()
 
 
+def spell_transformer(spells: list[str]) -> list[str]:
+    return list(map(lambda spell: f"* {spell} *", spells))
+
+
 def test_spell_transformer() -> None:
     print("Testing spell transformer...")
     for spell in spell_transformer(spells_generated):
         print(spell, end=" ")
     print("\n")
+
+
+def mage_stats(mages: list[dict[str, object]]) -> dict[str, object]:
+    return {
+        "max_power": max(
+            mages,
+            key=lambda mage: cast(int, mage["power"])
+        )["power"],
+        "min_power": min(
+            mages,
+            key=lambda mage: cast(int, mage["power"])
+        )["power"],
+        "avg_power": round(
+            sum(map(lambda mage: cast(
+                int, mage["power"]
+            ), mages)) / len(mages),
+            2
+        )
+    }
 
 
 def test_mage_stats() -> None:

@@ -1,9 +1,16 @@
 from typing import Callable, Any
 
 
+allowed_initial_powers = [73, 41, 33]
+allowed_power_additions = [10, 6, 7, 6, 17]
+allowed_enchantment_types = ['Flaming', 'Frozen', 'Radiant']
+allowed_items_to_enchant = ['Sword', 'Shield', 'Ring', 'Cloak']
+
+
 def mage_counter() -> Callable[[], int]:
     count = 0
-    def increment_mage_counter():
+
+    def increment_mage_counter() -> int:
         nonlocal count
         count += 1
         return count
@@ -21,8 +28,9 @@ def test_mage_counter() -> None:
 
 
 def spell_accumulator(initial_power: int) -> Callable[[int], int]:
-    acumulated_power: int = initial_power
-    def acumulate_power(power: int):
+    acumulated_power = initial_power
+
+    def acumulate_power(power: int) -> int:
         nonlocal acumulated_power
         acumulated_power += power
         return acumulated_power
@@ -37,29 +45,22 @@ def test_spell_accumulator() -> None:
     print()
 
 
-"""
-enchantment_factory(enchantment_type) - Create enchantment functions:
-• Return a function that applies the specified enchantment
-• The returned function takes an item name and returns enchanted description
-• Format: "enchantment_type item_name" (e.g., "Flaming Sword")
-• Each factory creates functions with different enchantment types
-
-Flaming Sword
-Frozen Shield
-"""
-def enchantment_factory(enchantment_type: str) -> Callable:
-    pass
+def enchantment_factory(enchantment_type: str) -> Callable[[str], str]:
+    return lambda item_to_enchant: f"{enchantment_type} {item_to_enchant}"
 
 
 def test_enchantment_factory() -> None:
     print("Testing enchantment factory...")
-    enchantment_factory()
+    flaming_enchantment = enchantment_factory(allowed_enchantment_types[0])
+    print(flaming_enchantment(allowed_items_to_enchant[0]))
+    frozen_enchantment = enchantment_factory(allowed_enchantment_types[1])
+    print(frozen_enchantment(allowed_items_to_enchant[1]))
     print()
 
 
 def memory_vault() -> dict[str, Callable[..., str | Any]]:
     stored_values: dict[str, Any] = {}
-    
+
     def store(key: str, value: Any) -> None:
         stored_values[key] = value
 
